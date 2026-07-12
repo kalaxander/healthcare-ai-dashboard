@@ -1,0 +1,33 @@
+Environments
+
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+Python Cache
+
+pycache/
+*.py[cod]
+*$py.class
+
+Large Datasets and Databases (Users should generate these locally)
+
+*.db
+*.sqlite3
+*.csv
+*.data
+
+Machine Learning Models (Users should train these locally)
+
+*.pkl
+*.h5
+*.model
+
+Temporary Files
+
+temp_audio.wav
+.DS_Store

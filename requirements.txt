@@ -1,0 +1,10 @@
+streamlit
+pandas
+scikit-learn
+shap
+transformers
+PyPDF2
+faster-whisper
+matplotlib
+torch
+Pillow
