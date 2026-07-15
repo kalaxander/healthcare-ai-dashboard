@@ -26,9 +26,30 @@ def generate_mock_data():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
-    print("Clearing old mock data...")
-    cursor.execute("DELETE FROM clinical_records;")
-    cursor.execute("DELETE FROM patients;")
+    print("Rebuilding mock tables...")
+    # 1. Safely drop them if they exist to start fresh
+    cursor.execute("DROP TABLE IF EXISTS clinical_records;")
+    cursor.execute("DROP TABLE IF EXISTS patients;")
+    
+    # 2. Re-create the tables from scratch!
+    cursor.execute("""
+    CREATE TABLE patients (
+        patient_id INTEGER PRIMARY KEY,
+        name TEXT,
+        age INTEGER,
+        gender TEXT
+    )
+    """)
+    
+    cursor.execute("""
+    CREATE TABLE clinical_records (
+        record_id INTEGER PRIMARY KEY,
+        patient_id INTEGER,
+        condition TEXT,
+        status TEXT,
+        FOREIGN KEY(patient_id) REFERENCES patients(patient_id)
+    )
+    """)
     
     print("Generating 200 realistic patients...")
     patients_data = []

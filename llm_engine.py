@@ -1,6 +1,7 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 import torch
-
+import json
+import re
 # Global variable to cache the pipeline so we don't reload the 1.5B model on every query!
 _sql_pipeline = None
 
@@ -90,3 +91,30 @@ if __name__ == "__main__":
     response = generate_sql_response(test_query)
     print("\n--- Generated Output ---")
     print(response)
+
+def extract_patient_entities(text):
+    """
+    Takes a natural language sentence and extracts patient details into a JSON format.
+    """
+    pipe = setup_sql_model()
+    
+    formatted_prompt = f"""<|im_start|>system
+You are a medical data extraction assistant. Extract the patient details from the user's text and output ONLY a valid JSON object with the exact keys: "name", "age", "gender", "condition", "status". If a detail is missing, put "Unknown" (or 0 for age). Do not include any explanations.<|im_end|>
+<|im_start|>user
+{text}<|im_end|>
+<|im_start|>assistant
+"""
+    print("\n[📝] Qwen is extracting patient data...")
+    output = pipe(formatted_prompt, max_new_tokens=100)
+    raw_text = output[0]['generated_text'].strip()
+    
+    # Use regex to find the JSON bracket block in case the AI adds extra text
+    match = re.search(r'\{.*?\}', raw_text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group(0))
+        except:
+            pass
+            
+    # Fallback if extraction fails
+    return {"name": "Unknown", "age": 0, "gender": "Unknown", "condition": "Unknown", "status": "Stable"}
