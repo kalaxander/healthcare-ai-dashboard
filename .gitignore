@@ -32,4 +32,6 @@ Temporary Files
 temp_audio.wav
 .DS_Store
 
-.akshat PPT.pptx
+Presentations
+
+*.pptx
